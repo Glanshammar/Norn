@@ -8,6 +8,10 @@
 #include <QJsonArray>
 #include <QThread>
 
+#include <QSqlRecord>
+#include <QSqlQuery>
+#include <QDebug>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -32,6 +36,10 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::onPostError);
 
     updateTokenDisplay();
+
+    if (!db.open("localhost", 5432, "verdandi_dev", "postgres", "postgres")) {
+        qDebug() << "Cannot open database:" << db.lastError();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -158,3 +166,28 @@ void MainWindow::on_buttonPage2_clicked()
     ui->TabsWidget->setCurrentIndex(1);
 }
 
+
+void MainWindow::on_buttonDatabase_clicked()
+{
+    if (!db.createTableBuilder("departments")
+             .id()
+             .text("name", /*notNull=*/true)
+             .create()) {
+        qDebug() << "Failed to create departments:" << db.lastError();
+    } else {
+        qDebug() << "Created 'departments' table in database.";
+    }
+
+    if (!db.createTableBuilder("employees")
+             .id()
+             .text("name", true)
+             .integer("department_id")
+             .numeric("salary")
+             .timestamp("hired_at")
+             .foreignKey("department_id", "departments", "id")
+             .create()) {
+        qDebug() << "Failed to create employees:" << db.lastError();
+    } else {
+        qDebug() << "Created 'employees' table in database.";
+    }
+}

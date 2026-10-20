@@ -6,6 +6,7 @@
 #include <QVariant>
 #include <QPair>
 #include "apiclient.h"
+#include "databasemanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -45,10 +46,13 @@ private slots:
 
     void on_buttonPage2_clicked();
 
+    void on_buttonDatabase_clicked();
+
 private:
     Ui::MainWindow *ui;
     ApiClient *api;
     void updateTokenDisplay();
+    DatabaseManager& db = DatabaseManager::instance();
 
 signals:
     void apiResponseReceived(const QJsonDocument& response);
