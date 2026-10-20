@@ -14,7 +14,6 @@ void ApiClient::addAuthHeaders(QNetworkRequest &request) {
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setAttribute(QNetworkRequest::Http2AllowedAttribute, true);
 
-    // Add Authorization header if token exists
     if (!m_bearerToken.isEmpty()) {
         QString authHeader = "Bearer " + m_bearerToken;
         request.setRawHeader("Authorization", authHeader.toUtf8());
@@ -46,7 +45,6 @@ void ApiClient::getStatus(){
             [this](const QByteArray &data) {
                 qDebug() << "Got data:" << data;
 
-                // Parse JSON
                 QJsonParseError parseError;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
 
@@ -81,7 +79,7 @@ void ApiClient::getStatus(){
             });
 }
 
-// ================ Generic POST Method ================
+// ================ POST Method ================
 
 void ApiClient::post(const QUrl &url,
                      const QByteArray &data,
@@ -102,7 +100,6 @@ void ApiClient::post(const QUrl &url,
             qDebug() << "POST Response received, size:" << response.size();
             qDebug() << "POST Response:" << response;
 
-            // Emit signal for those using signals
             emit postResponseReceived(response);
 
             if (onSuccess) onSuccess(response);
@@ -112,7 +109,6 @@ void ApiClient::post(const QUrl &url,
                 .arg(reply->errorString());
             qDebug() << "POST Error:" << error;
 
-            // Emit error signal
             emit postError(error);
 
             if (onError) onError(error);
@@ -120,7 +116,6 @@ void ApiClient::post(const QUrl &url,
         reply->deleteLater();
     });
 
-    // Connect SSL errors for debugging
     connect(reply, &QNetworkReply::sslErrors, [=](const QList<QSslError> &errors) {
         qDebug() << "SSL Errors in POST:";
         for (const auto &error : errors) {
@@ -131,14 +126,13 @@ void ApiClient::post(const QUrl &url,
     request.setTransferTimeout(10000); // 10 seconds
 }
 
-// ================ Convenient POST with QVariantMap ================
+// ================ POST with QVariantMap ================
 
 void ApiClient::postJson(const QUrl &url,
                          const QVariantMap &data,
                          const std::function<void(const QByteArray&)> &onSuccess,
                          const std::function<void(const QString&)> &onError) {
 
-    // Convert QVariantMap to JSON
     QJsonObject jsonObj = QJsonObject::fromVariantMap(data);
     QJsonDocument jsonDoc(jsonObj);
     QByteArray jsonData = jsonDoc.toJson(QJsonDocument::Compact);
@@ -146,7 +140,7 @@ void ApiClient::postJson(const QUrl &url,
     post(url, jsonData, onSuccess, onError);
 }
 
-// ================ Convenient POST with QJsonObject ================
+// ================ POST with QJsonObject ================
 
 void ApiClient::postJson(const QUrl &url,
                          const QJsonObject &data,
