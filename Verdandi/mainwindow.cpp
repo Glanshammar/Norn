@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(api, &ApiClient::postError,
             this, &MainWindow::onPostError);
 
-    if (!db.open("localhost", 5432, "verdandi_dev", "postgres", "postgres")) {
+    if (!db.open("localhost", 5432, "norn_dev", "postgres", "postgres")) {
         qDebug() << "Cannot open database:" << db.lastError();
     }
 }
