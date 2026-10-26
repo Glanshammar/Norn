@@ -7,10 +7,9 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QThread>
-
+#include <QMessageBox>
 #include <QSqlRecord>
 #include <QSqlQuery>
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,8 +24,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->buttonTasks->setIcon(QIcon(":/icons/tasks.png"));
     api = new ApiClient(this);
 
-    qDebug() << "Thread before invokeMethod:" << QThread::currentThread();
-    qDebug() << "ApiClient thread:" << this->thread();
+    // Tab page switching keybinds
+    ui->buttonDashboard->setShortcut(QKeySequence(Qt::Key_F1));
+    ui->buttonNotes->setShortcut(QKeySequence(Qt::Key_F2));
+    ui->buttonTasks->setShortcut(QKeySequence(Qt::Key_F3));
+    ui->buttonAffiliates->setShortcut(QKeySequence(Qt::Key_F4));
 
     //API Status
     connect(api, &ApiClient::statusReady,
@@ -63,55 +65,47 @@ void MainWindow::updateTokenDisplay() {
         ui->labelPage2->setText("No token set");
         ui->labelPage2->setStyleSheet("color: red;");
     } else {
-        // Show only first/last few chars for security
-        QString displayToken = token.length() > 20
-                                   ? token.left(10) + "..." + token.right(10)
-                                   : token;
-        ui->labelPage2->setText("Token: " + displayToken);
+        ui->labelPage2->setText("Token: " + token);
         ui->labelPage2->setStyleSheet("color: green;");
     }
 }
 
 void MainWindow::onStatusReceived(const QPair<QString, QString> &pair) {
-    ui->labelPage1->setText("Status: " + pair.first + "\n" + "Message: " + pair.second);
+    QMessageBox::information(this, "Status: " + pair.first, pair.second);
 }
 
 void MainWindow::onStatusError(const QString &error) {
-    ui->labelPage1->setText("Error: " + error);
+    QMessageBox::warning(this, "Error", error);
 }
 
 void MainWindow::onPostResponse(const QByteArray &response) {
-    // Parse and display POST response
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &parseError);
 
     if (parseError.error != QJsonParseError::NoError) {
-        ui->textEdit->setPlainText("JSON Parse Error: " + parseError.errorString());
+        // ui->textEdit->setPlainText("JSON Parse Error: " + parseError.errorString());
         return;
     }
 
-    // Pretty print JSON
     QString formattedJson = jsonDoc.toJson(QJsonDocument::Indented);
-    ui->textEdit->setPlainText(formattedJson);
+    // ui->textEdit->setPlainText(formattedJson);
 
-    // Also update a label
-    ui->labelPage1->setText("POST successful!");
-    ui->labelPage1->setStyleSheet("color: green;");
+    // ui->labelPage1->setText("POST successful!");
+    // ui->labelPage1->setStyleSheet("color: green;");
 }
 
 void MainWindow::onPostError(const QString &error) {
-    ui->textEdit->setPlainText("POST Error: " + error);
-    ui->labelPage1->setText("POST failed!");
-    ui->labelPage1->setStyleSheet("color: red;");
+    // ui->textEdit->setPlainText("POST Error: " + error);
+    // ui->labelPage1->setText("POST failed!");
+    // ui->labelPage1->setStyleSheet("color: red;");
 }
 
-void MainWindow::on_buttonApiTest_clicked()
+void MainWindow::ApiTest()
 {
     api->get(QUrl("http://127.0.0.1:5285/api/status"),
-            [this](const QByteArray &data) {  // Capture 'this' to access member variables
+            [this](const QByteArray &data) {
                 qDebug() << "Got data:" << data;
 
-                // Parse JSON
                 QJsonParseError parseError;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
 
@@ -129,50 +123,18 @@ void MainWindow::on_buttonApiTest_clicked()
                 QString status = jsonObj["status"].toString();
                 QString message = jsonObj["message"].toString();
 
-                ui->labelPage1->setText("Status: " + status + "\n" + "Message: " + message);
+                qDebug() << "Status:" << status;
+                qDebug() << "Message:" << message;
+                // ui->labelPage1->setText("Status: " + status + "\n" + "Message: " + message);
             },
-            [this](const QString &error) {  // Capture 'this' for error handling
+            [this](const QString &error) {
                 qDebug() << "Error:" << error;
-                ui->labelPage1->setText("Error: " + error);
+                // ui->labelPage1->setText("Error: " + error);
             });
 }
 
-void MainWindow::on_buttonApiTest2_clicked()
-{
-    api->getStatus();
-}
 
-void MainWindow::on_buttonApiPost_clicked()
-{
-
-}
-
-
-void MainWindow::on_buttonPage2_triggered(QAction *arg1)
-{
-    ui->TabsWidget->setCurrentIndex(1);
-}
-
-
-void MainWindow::on_buttonDashboard_triggered(QAction *arg1)
-{
-    ui->TabsWidget->setCurrentIndex(0);
-}
-
-
-void MainWindow::on_buttonDashboard_clicked()
-{
-    ui->TabsWidget->setCurrentIndex(0);
-}
-
-
-void MainWindow::on_buttonPage2_clicked()
-{
-    ui->TabsWidget->setCurrentIndex(1);
-}
-
-
-void MainWindow::on_buttonDatabase_clicked()
+void MainWindow::DatabaseTest()
 {
     if (!db.createTableBuilder("departments")
              .id()
@@ -196,3 +158,27 @@ void MainWindow::on_buttonDatabase_clicked()
         qDebug() << "Created 'employees' table in database.";
     }
 }
+
+void MainWindow::on_buttonDashboard_clicked()
+{
+    ui->TabsWidget->setCurrentWidget(ui->pageDashboard);
+}
+
+
+void MainWindow::on_buttonNotes_clicked()
+{
+    ui->TabsWidget->setCurrentWidget(ui->pageNotes);
+}
+
+
+void MainWindow::on_buttonTasks_clicked()
+{
+    ui->TabsWidget->setCurrentWidget(ui->pageTasks);
+}
+
+
+void MainWindow::on_buttonAffiliates_clicked()
+{
+    ui->TabsWidget->setCurrentWidget(ui->pageAffiliates);
+}
+

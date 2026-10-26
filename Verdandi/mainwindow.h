@@ -29,24 +29,14 @@ private slots:
 
     void onPostResponse(const QByteArray &response);
     void onPostError(const QString &error);
+    void ApiTest();
+    void DatabaseTest();
 
     void on_actionExit_triggered();
-
-    void on_buttonApiTest_clicked();
-
-    void on_buttonApiTest2_clicked();
-
-    void on_buttonApiPost_clicked();
-
-    void on_buttonPage2_triggered(QAction *arg1);
-
-    void on_buttonDashboard_triggered(QAction *arg1);
-
     void on_buttonDashboard_clicked();
-
-    void on_buttonPage2_clicked();
-
-    void on_buttonDatabase_clicked();
+    void on_buttonNotes_clicked();
+    void on_buttonTasks_clicked();
+    void on_buttonAffiliates_clicked();
 
 private:
     Ui::MainWindow *ui;
