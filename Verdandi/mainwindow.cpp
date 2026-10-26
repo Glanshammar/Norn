@@ -17,7 +17,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->TabsWidget->setCurrentIndex(0);
+    ui->TabsWidget->setCurrentWidget(ui->pageDashboard);
+    ui->buttonAI->setIcon(QIcon(":/icons/ai.png"));
+    ui->buttonSettings->setIcon(QIcon(":/icons/settings.png"));
+    ui->buttonDashboard->setIcon(QIcon(":/icons/dashboard.png"));
+    ui->buttonNotes->setIcon(QIcon(":/icons/notes.png"));
+    ui->buttonTasks->setIcon(QIcon(":/icons/tasks.png"));
     api = new ApiClient(this);
 
     qDebug() << "Thread before invokeMethod:" << QThread::currentThread();

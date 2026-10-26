@@ -25,6 +25,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         apiclient.h apiclient.cpp
         databasemanager.h databasemanager.cpp
+        resources.qrc
 
     )
 else()

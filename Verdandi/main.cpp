@@ -6,6 +6,7 @@
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
+    QApplication::setWindowIcon(QIcon(":/icons/celtic.png"));
     MainWindow window;
 
     QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
