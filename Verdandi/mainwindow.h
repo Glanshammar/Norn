@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVariant>
 #include <QPair>
+#include <QLabel>
 #include "apiclient.h"
 #include "databasemanager.h"
 
@@ -41,7 +42,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     ApiClient *api;
-    void updateTokenDisplay();
+    void tokenDisplay(QLabel& label);
     DatabaseManager& db = DatabaseManager::instance();
 
 signals:

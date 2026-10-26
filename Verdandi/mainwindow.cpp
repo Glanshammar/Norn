@@ -42,8 +42,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(api, &ApiClient::postError,
             this, &MainWindow::onPostError);
 
-    updateTokenDisplay();
-
     if (!db.open("localhost", 5432, "verdandi_dev", "postgres", "postgres")) {
         qDebug() << "Cannot open database:" << db.lastError();
     }
@@ -59,14 +57,14 @@ void MainWindow::on_actionExit_triggered()
     QApplication::quit();
 }
 
-void MainWindow::updateTokenDisplay() {
+void MainWindow::tokenDisplay(QLabel& label) {
     QString token = api->bearerToken();
     if (token.isEmpty()) {
-        ui->labelPage2->setText("No token set");
-        ui->labelPage2->setStyleSheet("color: red;");
+        label.setText("No token set");
+        label.setStyleSheet("color: red;");
     } else {
-        ui->labelPage2->setText("Token: " + token);
-        ui->labelPage2->setStyleSheet("color: green;");
+        label.setText("Token: " + token);
+        label.setStyleSheet("color: green;");
     }
 }
 
