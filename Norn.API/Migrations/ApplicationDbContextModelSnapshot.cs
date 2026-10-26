@@ -3,12 +3,12 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Norn.API.Context;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Yggdrasil.API.Context;
 
 #nullable disable
 
-namespace Yggdrasil.API.Migrations
+namespace Norn.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace Yggdrasil.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.Files", b =>
+            modelBuilder.Entity("Norn.API.Entities.Files", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("Files");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.Goal", b =>
+            modelBuilder.Entity("Norn.API.Entities.Goal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -91,7 +91,7 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("Goals");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.GoalTask", b =>
+            modelBuilder.Entity("Norn.API.Entities.GoalTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,7 +117,7 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("GoalTasks", (string)null);
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.Task", b =>
+            modelBuilder.Entity("Norn.API.Entities.Task", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,7 +146,7 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.TaskStep", b =>
+            modelBuilder.Entity("Norn.API.Entities.TaskStep", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -172,7 +172,7 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("TaskSteps");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.User", b =>
+            modelBuilder.Entity("Norn.API.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -208,15 +208,15 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.GoalTask", b =>
+            modelBuilder.Entity("Norn.API.Entities.GoalTask", b =>
                 {
-                    b.HasOne("Yggdrasil.API.Entities.Goal", "Goal")
+                    b.HasOne("Norn.API.Entities.Goal", "Goal")
                         .WithMany("GoalTasks")
                         .HasForeignKey("GoalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Yggdrasil.API.Entities.Task", "Task")
+                    b.HasOne("Norn.API.Entities.Task", "Task")
                         .WithMany("GoalTasks")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -227,21 +227,21 @@ namespace Yggdrasil.API.Migrations
                     b.Navigation("Task");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.TaskStep", b =>
+            modelBuilder.Entity("Norn.API.Entities.TaskStep", b =>
                 {
-                    b.HasOne("Yggdrasil.API.Entities.Task", null)
+                    b.HasOne("Norn.API.Entities.Task", null)
                         .WithMany("TaskSteps")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.Goal", b =>
+            modelBuilder.Entity("Norn.API.Entities.Goal", b =>
                 {
                     b.Navigation("GoalTasks");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.Task", b =>
+            modelBuilder.Entity("Norn.API.Entities.Task", b =>
                 {
                     b.Navigation("GoalTasks");
 

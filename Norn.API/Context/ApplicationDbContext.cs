@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Yggdrasil.API.Entities;
-using Tasks = Yggdrasil.API.Entities.Task;
+using Norn.API.Entities;
+using Task = Norn.API.Entities.Task;
+using Tasks = Norn.API.Entities.Task;
 
-namespace Yggdrasil.API.Context;
+namespace Norn.API.Context;
 
 public partial class ApplicationDbContext : DbContext
 {
@@ -21,7 +22,7 @@ public partial class ApplicationDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Files> Files => Set<Files>();
     public DbSet<Goal> Goals => Set<Goal>();
-    public DbSet<Tasks> Tasks => Set<Tasks>();
+    public DbSet<Task> Tasks => Set<Task>();
     public DbSet<GoalTask> GoalTasks => Set<GoalTask>();
     public DbSet<TaskStep> TaskSteps => Set<TaskStep>();
 
@@ -56,7 +57,7 @@ public partial class ApplicationDbContext : DbContext
             .HasIndex(gt => new { gt.GoalId, gt.TaskId })
             .IsUnique();
 
-        modelBuilder.Entity<Tasks>()
+        modelBuilder.Entity<Task>()
             .HasIndex(t => t.DueDate);
 
         modelBuilder.Entity<TaskStep>()

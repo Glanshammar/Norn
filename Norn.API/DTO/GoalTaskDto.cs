@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Yggdrasil.API.Entities;
+using Norn.API.Entities;
 
-namespace Yggdrasil.API.DTO;
+namespace Norn.API.DTO;
 
 public class GoalDto
 {

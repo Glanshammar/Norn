@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Yggdrasil.API.Entities;
+namespace Norn.API.Entities;
 
 public enum Priority
 {

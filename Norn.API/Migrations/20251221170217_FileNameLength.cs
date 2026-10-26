@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Yggdrasil.API.Migrations
+namespace Norn.API.Migrations
 {
     /// <inheritdoc />
     public partial class FileNameLength : Migration

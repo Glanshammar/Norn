@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using Yggdrasil.API.Context;
-using Yggdrasil.API.DTO;
-using Entities_Task = Yggdrasil.API.Entities.Task;
+using Norn.API.Context;
+using Norn.API.DTO;
+using Entities_Task = Norn.API.Entities.Task;
+using Task = Norn.API.Entities.Task;
 
-namespace Yggdrasil.API.Controllers;
+namespace Norn.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -22,8 +23,8 @@ public class TasksController : ControllerBase
 
     //Get tasks
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Entities_Task>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<Entities_Task>>> GetTasks()
+    [ProducesResponseType(typeof(IEnumerable<Task>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Task>>> GetTasks()
     {
         try
         {
@@ -42,9 +43,9 @@ public class TasksController : ControllerBase
     // Get task by ID
     // api/tasks/{id}
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(Entities_Task), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Task), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Entities_Task>> GetTask(int id)
+    public async Task<ActionResult<Task>> GetTask(int id)
     {
         try
         {
@@ -68,9 +69,9 @@ public class TasksController : ControllerBase
 
     // Create task
     [HttpPost]
-    [ProducesResponseType(typeof(Entities_Task), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Task), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Entities_Task>> CreateTask([FromBody] TaskDto taskDto)
+    public async Task<ActionResult<Task>> CreateTask([FromBody] TaskDto taskDto)
     {
         try
         {
@@ -83,7 +84,7 @@ public class TasksController : ControllerBase
                 return BadRequest(new { errors = validationResults.Select(v => v.ErrorMessage) });
             }
             
-            var task = new Entities_Task
+            var task = new Task
             {
                 TaskName = taskDto.TaskName,
                 TaskDescription = taskDto.TaskDescription

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yggdrasil.API", "Yggdrasil.API\Yggdrasil.API.csproj", "{191056D8-3F41-4AD9-9525-8A9EC764CA4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norn.API", "Norn.API\Norn.API.csproj", "{191056D8-3F41-4AD9-9525-8A9EC764CA4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

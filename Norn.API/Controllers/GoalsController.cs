@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using Yggdrasil.API.Context;
-using Yggdrasil.API.DTO;
-using Yggdrasil.API.Entities;
+using Norn.API.Context;
+using Norn.API.DTO;
+using Norn.API.Entities;
 
-namespace Yggdrasil.API.Controllers;
+namespace Norn.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

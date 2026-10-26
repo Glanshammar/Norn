@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Yggdrasil.API.DTO;
+namespace Norn.API.DTO;
 
 public class UserDto
 {

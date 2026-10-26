@@ -1,6 +1,6 @@
 using System.Net;
 using Microsoft.EntityFrameworkCore;
-using Yggdrasil.API.Context;
+using Norn.API.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 

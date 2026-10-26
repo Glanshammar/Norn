@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace Yggdrasil.API.Entities;
+namespace Norn.API.Entities;
 
 public class User
 {

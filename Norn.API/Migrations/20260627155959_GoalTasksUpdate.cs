@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Yggdrasil.API.Entities
+namespace Norn.API.Entities
 {
     /// <inheritdoc />
     public partial class GoalTasksUpdate : Migration

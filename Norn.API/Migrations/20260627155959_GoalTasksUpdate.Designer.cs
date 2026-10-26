@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Norn.API.Context;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Yggdrasil.API.Context;
 
 #nullable disable
 
-namespace Yggdrasil.API.Migrations
+namespace Norn.API.Entities
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251214172541_Documents")]
-    partial class Documents
+    [Migration("20260627155959_GoalTasksUpdate")]
+    partial class GoalTasksUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace Yggdrasil.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.Document", b =>
+            modelBuilder.Entity("Norn.API.Entities.Files", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,8 +48,8 @@ namespace Yggdrasil.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("name");
 
                     b.Property<DateTime>("TimeCreated")
@@ -62,10 +62,10 @@ namespace Yggdrasil.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Documents");
+                    b.ToTable("Files");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.Goal", b =>
+            modelBuilder.Entity("Norn.API.Entities.Goal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,18 +86,24 @@ namespace Yggdrasil.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("Goals");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.GoalTask", b =>
+            modelBuilder.Entity("Norn.API.Entities.GoalTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("GoalId")
                         .HasColumnType("integer");
@@ -114,13 +120,19 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("GoalTasks", (string)null);
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.Task", b =>
+            modelBuilder.Entity("Norn.API.Entities.Task", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
 
                     b.Property<string>("TaskDescription")
                         .IsRequired()
@@ -137,7 +149,33 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.User", b =>
+            modelBuilder.Entity("Norn.API.Entities.TaskStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("StepTitle")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("TaskSteps");
+                });
+
+            modelBuilder.Entity("Norn.API.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -173,16 +211,16 @@ namespace Yggdrasil.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Yggdrasil.API.Entities.GoalTask", b =>
+            modelBuilder.Entity("Norn.API.Entities.GoalTask", b =>
                 {
-                    b.HasOne("Yggdrasil.API.Entities.Goal", "Goal")
-                        .WithMany()
+                    b.HasOne("Norn.API.Entities.Goal", "Goal")
+                        .WithMany("GoalTasks")
                         .HasForeignKey("GoalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Yggdrasil.API.Entities.Task", "Task")
-                        .WithMany()
+                    b.HasOne("Norn.API.Entities.Task", "Task")
+                        .WithMany("GoalTasks")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -190,6 +228,27 @@ namespace Yggdrasil.API.Migrations
                     b.Navigation("Goal");
 
                     b.Navigation("Task");
+                });
+
+            modelBuilder.Entity("Norn.API.Entities.TaskStep", b =>
+                {
+                    b.HasOne("Norn.API.Entities.Task", null)
+                        .WithMany("TaskSteps")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Norn.API.Entities.Goal", b =>
+                {
+                    b.Navigation("GoalTasks");
+                });
+
+            modelBuilder.Entity("Norn.API.Entities.Task", b =>
+                {
+                    b.Navigation("GoalTasks");
+
+                    b.Navigation("TaskSteps");
                 });
 #pragma warning restore 612, 618
         }

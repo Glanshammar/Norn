@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Yggdrasil.API.Migrations
+namespace Norn.API.Migrations
 {
     /// <inheritdoc />
     public partial class DocsToFiles : Migration
