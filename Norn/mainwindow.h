@@ -6,6 +6,8 @@
 #include <QVariant>
 #include <QPair>
 #include <QLabel>
+#include <QButtonGroup>
+#include <QToolButton>
 #include "apiclient.h"
 #include "databasemanager.h"
 
@@ -37,13 +39,14 @@ private slots:
     void on_buttonDashboard_clicked();
     void on_buttonNotes_clicked();
     void on_buttonTasks_clicked();
-    void on_buttonAffiliates_clicked();
+    void on_buttonSettings_clicked();
 
 private:
     Ui::MainWindow *ui;
     ApiClient *api;
     void tokenDisplay(QLabel& label);
     DatabaseManager& db = DatabaseManager::instance();
+    QButtonGroup *sidebarButtons = new QButtonGroup(this);
 
 signals:
     void apiResponseReceived(const QJsonDocument& response);

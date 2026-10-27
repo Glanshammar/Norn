@@ -16,19 +16,31 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->TabsWidget->setCurrentWidget(ui->pageDashboard);
+
+    // Sidebar button icons
     ui->buttonAI->setIcon(QIcon(":/icons/ai.png"));
     ui->buttonSettings->setIcon(QIcon(":/icons/settings.png"));
     ui->buttonDashboard->setIcon(QIcon(":/icons/dashboard.png"));
     ui->buttonNotes->setIcon(QIcon(":/icons/notes.png"));
     ui->buttonTasks->setIcon(QIcon(":/icons/tasks.png"));
+
     api = new ApiClient(this);
+    ui->TabsWidget->setCurrentWidget(ui->pageDashboard);
+    ui->buttonDashboard->setChecked(true);
+
+    // Sidebar button exclusive
+    sidebarButtons->setExclusive(true);
+    sidebarButtons->addButton(ui->buttonDashboard);
+    sidebarButtons->addButton(ui->buttonNotes);
+    sidebarButtons->addButton(ui->buttonTasks);
+    sidebarButtons->addButton(ui->buttonSettings);
+    sidebarButtons->addButton(ui->buttonAI);
 
     // Tab page switching keybinds
     ui->buttonDashboard->setShortcut(QKeySequence(Qt::Key_F1));
     ui->buttonNotes->setShortcut(QKeySequence(Qt::Key_F2));
     ui->buttonTasks->setShortcut(QKeySequence(Qt::Key_F3));
-    ui->buttonAffiliates->setShortcut(QKeySequence(Qt::Key_F4));
+    ui->buttonSettings->setShortcut(QKeySequence(Qt::Key_F5));
 
     //API Status
     connect(api, &ApiClient::statusReady,
@@ -175,8 +187,8 @@ void MainWindow::on_buttonTasks_clicked()
 }
 
 
-void MainWindow::on_buttonAffiliates_clicked()
+void MainWindow::on_buttonSettings_clicked()
 {
-    ui->TabsWidget->setCurrentWidget(ui->pageAffiliates);
+    ui->TabsWidget->setCurrentWidget(ui->pageSettings);
 }
 
