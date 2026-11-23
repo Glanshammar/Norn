@@ -10,6 +10,9 @@
 #include <QMessageBox>
 #include <QSqlRecord>
 #include <QSqlQuery>
+#include <QFileSystemModel>
+#include <QStandardPaths>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -34,13 +37,24 @@ MainWindow::MainWindow(QWidget *parent)
     sidebarButtons->addButton(ui->buttonNotes);
     sidebarButtons->addButton(ui->buttonTasks);
     sidebarButtons->addButton(ui->buttonSettings);
-    sidebarButtons->addButton(ui->buttonAI);
 
     // Tab page switching keybinds
     ui->buttonDashboard->setShortcut(QKeySequence(Qt::Key_F1));
     ui->buttonNotes->setShortcut(QKeySequence(Qt::Key_F2));
     ui->buttonTasks->setShortcut(QKeySequence(Qt::Key_F3));
-    ui->buttonSettings->setShortcut(QKeySequence(Qt::Key_F5));
+    ui->buttonSettings->setShortcut(QKeySequence(Qt::Key_F4));
+
+    // Set notes list to path
+    QString documentsFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    fileModel = new QFileSystemModel(this);
+    fileModel->setRootPath(documentsFolder);
+    fileModel->setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    ui->listNotes->setModel(fileModel);
+    ui->listNotes->setRootIndex(fileModel->index(documentsFolder));
+
+    for (int i = 1; i < fileModel->columnCount(); ++i) {
+        ui->listNotes->hideColumn(i);
+    }
 
     //API Status
     connect(api, &ApiClient::statusReady,
@@ -190,5 +204,31 @@ void MainWindow::on_buttonTasks_clicked()
 void MainWindow::on_buttonSettings_clicked()
 {
     ui->TabsWidget->setCurrentWidget(ui->pageSettings);
+}
+
+
+void MainWindow::on_listNotes_doubleClicked(const QModelIndex &index)
+{
+    QFile file(fileModel->filePath(index));
+    QFileInfo info(file);
+    QString fileType = info.completeSuffix();
+
+    QList<QString> allowedFileTypes = {"txt", "md"};
+    if (!allowedFileTypes.contains(fileType)){
+        qDebug() << "File is not a text file.";
+        return;
+    }
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "File couldn't be read:" << fileModel->filePath(index);
+        return;
+    }
+
+    const QString contents = QString::fromUtf8(file.readAll());
+    ui->notesEdit->setPlainText(contents);
+
+
+    if(fileType == "md")
+        ui->notesEdit->setMarkdown(contents);
 }
 

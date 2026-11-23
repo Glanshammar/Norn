@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QButtonGroup>
 #include <QToolButton>
+#include <QFileSystemModel>
 #include "apiclient.h"
 #include "databasemanager.h"
 
@@ -40,6 +41,7 @@ private slots:
     void on_buttonNotes_clicked();
     void on_buttonTasks_clicked();
     void on_buttonSettings_clicked();
+    void on_listNotes_doubleClicked(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;
@@ -47,6 +49,7 @@ private:
     void tokenDisplay(QLabel& label);
     DatabaseManager& db = DatabaseManager::instance();
     QButtonGroup *sidebarButtons = new QButtonGroup(this);
+    QFileSystemModel *fileModel;
 
 signals:
     void apiResponseReceived(const QJsonDocument& response);
