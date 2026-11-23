@@ -11,15 +11,12 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Verdandi</string>
-  </property>
-  <property name="styleSheet">
-   <string notr="true"/>
+   <string>Norn</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <layout class="QVBoxLayout" name="layoutSidebar">
+     <layout class="QVBoxLayout" name="layoutSidebarMain">
       <property name="spacing">
        <number>6</number>
       </property>
@@ -37,6 +34,12 @@
           <height>42</height>
          </size>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item>
@@ -52,6 +55,9 @@
           <width>42</width>
           <height>42</height>
          </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -69,6 +75,9 @@
           <height>42</height>
          </size>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>
@@ -83,22 +92,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item>
-       <widget class="QToolButton" name="buttonAffiliates">
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="text">
-         <string>Affiliates</string>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>42</width>
-          <height>42</height>
-         </size>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QToolButton" name="buttonAI">
@@ -117,6 +110,9 @@
           <width>42</width>
           <height>42</height>
          </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -137,6 +133,9 @@
           <width>42</width>
           <height>42</height>
          </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -160,17 +159,98 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="pageSettings">
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="layoutSettingsOne">
+            <item>
+             <widget class="QLabel" name="labelSettings">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Some Settings</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="settingOne">
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+              <property name="text">
+               <string>Setting One</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="settingTwo">
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+              <property name="text">
+               <string>Setting Two</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
         <widget class="QWidget" name="pageNotes">
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QLabel" name="labelNotes">
-            <property name="text">
-             <string>Notes Page</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
+          <item row="0" column="1">
+           <widget class="QTextEdit" name="notesEdit">
+            <property name="cursor" stdset="0">
+             <cursorShape>IBeamCursor</cursorShape>
             </property>
            </widget>
+          </item>
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="layoutSidebarNotes">
+            <item>
+             <widget class="QTreeView" name="listNotes">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -180,20 +260,6 @@
            <widget class="QLabel" name="labelTasks">
             <property name="text">
              <string>Tasks page</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="pageAffiliates">
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="0" column="0">
-           <widget class="QLabel" name="labelAffiliates">
-            <property name="text">
-             <string>Affiliates page</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -222,7 +288,7 @@
      <string>Program</string>
     </property>
     <addaction name="actionExit"/>
-    <addaction name="actionBearer_Token"/>
+    <addaction name="actionBearerToken"/>
    </widget>
    <addaction name="menuProgram"/>
   </widget>
@@ -231,7 +297,7 @@
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionBearer_Token">
+  <action name="actionBearerToken">
    <property name="text">
     <string>Bearer Token</string>
    </property>
