@@ -1,7 +1,7 @@
 #include "databasemanager.h"
 #include <QThread>
 
-QThreadStorage<QSqlDatabase> DatabaseManager::m_threadLocalConnections;
+QThreadStorage<QString> DatabaseManager::m_threadConnectionNames;
 QMutex DatabaseManager::m_threadLocalMutex;
 
 // ================================================================
@@ -606,33 +606,35 @@ QSqlDatabase DatabaseManager::threadConnection()
 {
     QMutexLocker locker(&m_threadLocalMutex);
 
-    if (!m_threadLocalConnections.hasLocalData()) {
-        QString connName = QString("thread_%1")
+    if (!m_threadConnectionNames.hasLocalData()) {
+        const QString connName = QString("thread_%1")
         .arg(quintptr(QThread::currentThread()), 0, 16);
-        QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", connName);
-        m_threadLocalConnections.setLocalData(db);
+        QSqlDatabase::addDatabase("QPSQL", connName);       // register it
+        m_threadConnectionNames.setLocalData(connName);     // remember only the name
     }
-    return m_threadLocalConnections.localData();
+    return QSqlDatabase::database(m_threadConnectionNames.localData());
 }
 
-QSqlDatabase DatabaseManager::threadConnection(const QString& host, int port,
+QSqlDatabase DatabaseManager::threadConnection(const QString& host, const int port,
                                                const QString& dbName,
                                                const QString& user,
                                                const QString& password,
-                                               int connectTimeout)
+                                               const int connectTimeout)
 {
     QMutexLocker locker(&m_threadLocalMutex);
 
-    QString connName = QString("thread_%1")
-                           .arg(quintptr(QThread::currentThread()), 0, 16);
+    const QString connName = QString("thread_%1")
+                                 .arg(quintptr(QThread::currentThread()), 0, 16);
 
-    if (m_threadLocalConnections.hasLocalData()) {
-        QSqlDatabase existing = m_threadLocalConnections.localData();
-        if (existing.isOpen()) return existing;
-        // Drop broken connection, recreate below.
-        const QString oldName = existing.connectionName();
-        existing = QSqlDatabase();
-        QSqlDatabase::removeDatabase(oldName);
+    if (m_threadConnectionNames.hasLocalData()) {
+        if (const QString existingName = m_threadConnectionNames.localData(); QSqlDatabase::contains(existingName)) {
+            QSqlDatabase existing = QSqlDatabase::database(existingName);
+            if (existing.isOpen())
+                return existing;
+
+            existing = QSqlDatabase();
+            QSqlDatabase::removeDatabase(existingName);
+        }
     }
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", connName);
@@ -649,7 +651,7 @@ QSqlDatabase DatabaseManager::threadConnection(const QString& host, int port,
     else
         qDebug() << "Thread-local connection opened for" << QThread::currentThread();
 
-    m_threadLocalConnections.setLocalData(db);
+    m_threadConnectionNames.setLocalData(connName);
     return db;
 }
 

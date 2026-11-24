@@ -124,7 +124,7 @@ private:
     QString m_lastError;
     mutable QMutex m_mutex;
 
-    static QThreadStorage<QSqlDatabase> m_threadLocalConnections;
+    static QThreadStorage<QString> m_threadConnectionNames;
     static QMutex m_threadLocalMutex;
 
     // --- Unlocked internals (caller MUST hold m_mutex) ---
