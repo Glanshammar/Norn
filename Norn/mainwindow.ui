@@ -231,13 +231,6 @@
         </widget>
         <widget class="QWidget" name="pageNotes">
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="1">
-           <widget class="QTextEdit" name="notesEdit">
-            <property name="cursor" stdset="0">
-             <cursorShape>IBeamCursor</cursorShape>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <layout class="QVBoxLayout" name="layoutSidebarNotes">
             <item>
@@ -251,6 +244,16 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item row="0" column="1">
+           <widget class="QTabWidget" name="notesTabs">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <property name="tabsClosable">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
