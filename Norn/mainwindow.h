@@ -9,6 +9,8 @@
 #include <QButtonGroup>
 #include <QToolButton>
 #include <QFileSystemModel>
+#include <QTextEdit>
+#include <QSettings>
 #include "apiclient.h"
 #include "databasemanager.h"
 
@@ -35,6 +37,10 @@ private slots:
     void onPostError(const QString &error);
     void ApiTest();
     void DatabaseTest();
+    void openFile(const QString &path);
+    void onSaveNote();
+    void restoreTabs();
+    void closeEvent(QCloseEvent *event);
 
     void on_actionExit_triggered();
     void on_buttonDashboard_clicked();

@@ -13,12 +13,15 @@
 #include <QFileSystemModel>
 #include <QStandardPaths>
 #include <QDesktopServices>
+#include <QShortcut>
+#include <QKeySequence>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QSettings settings(qgetenv("USERNAME"), "Norn");
 
     // Sidebar button icons
     ui->buttonAI->setIcon(QIcon(":/icons/ai.png"));
@@ -30,6 +33,31 @@ MainWindow::MainWindow(QWidget *parent)
     api = new ApiClient(this);
     ui->TabsWidget->setCurrentWidget(ui->pageDashboard);
     ui->buttonDashboard->setChecked(true);
+    ui->notesTabs->setTabsClosable(true);
+    if(!settings.contains("firstTime") || settings.value("firstTime").toBool()){
+        openFile(":/text/README.md");
+        settings.setValue("firstTime", false);
+    }
+    restoreTabs();
+
+    connect(ui->notesTabs, &QTabWidget::tabCloseRequested, this, [this](int index) {
+        QWidget *w = ui->notesTabs->widget(index);
+        ui->notesTabs->removeTab(index);
+        w->deleteLater();
+    });
+
+    auto *closeTabShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_W), this);
+    connect(closeTabShortcut, &QShortcut::activated, this, [this]() {
+        int index = ui->notesTabs->currentIndex();
+        if (index < 0) return;  // no tab open
+        QWidget *w = ui->notesTabs->widget(index);
+        ui->notesTabs->removeTab(index);
+        w->deleteLater();
+    });
+
+    auto *saveShortcut = new QShortcut(QKeySequence::Save, ui->notesTabs);
+    saveShortcut->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(saveShortcut, &QShortcut::activated, this, &MainWindow::onSaveNote);
 
     // Sidebar button exclusive
     sidebarButtons->setExclusive(true);
@@ -209,26 +237,137 @@ void MainWindow::on_buttonSettings_clicked()
 
 void MainWindow::on_listNotes_doubleClicked(const QModelIndex &index)
 {
-    QFile file(fileModel->filePath(index));
-    QFileInfo info(file);
-    QString fileType = info.completeSuffix();
+    openFile(fileModel->filePath(index));
+}
 
-    QList<QString> allowedFileTypes = {"txt", "md"};
-    if (!allowedFileTypes.contains(fileType)){
+void MainWindow::openFile(const QString &path)
+{
+    QFileInfo info(path);
+    const QString fileType = info.completeSuffix();
+
+    const QList<QString> allowedFileTypes = {"txt", "md"};
+    if (!allowedFileTypes.contains(fileType)) {
         qDebug() << "File is not a text file.";
         return;
     }
 
+    // Switch to already open file
+    QString wanted = info.canonicalFilePath();
+    if (wanted.isEmpty())
+        wanted = info.absoluteFilePath();
+
+    for (int i = 0; i < ui->notesTabs->count(); ++i) {
+        QWidget *existingTab = ui->notesTabs->widget(i);
+        if (!existingTab) continue;
+
+        const QString existingPath = existingTab->property("filePath").toString();
+        if (existingPath.isEmpty()) continue;
+
+        QString existing = QFileInfo(existingPath).canonicalFilePath();
+        if (existing.isEmpty())
+            existing = QFileInfo(existingPath).absoluteFilePath();
+
+#ifdef Q_OS_WIN
+        const bool same = existing.compare(wanted, Qt::CaseInsensitive) == 0;
+#else
+        const bool same = (existing == wanted);
+#endif
+        if (same) {
+            ui->notesTabs->setCurrentIndex(i);
+            if (QTextEdit *te = existingTab->findChild<QTextEdit *>())
+                te->setFocus();
+            return;
+        }
+    }
+    // ------------------------------------------------
+
+    QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "File couldn't be read:" << fileModel->filePath(index);
+        qDebug() << "File couldn't be read:" << path;
         return;
     }
 
+    QWidget *tabPage = new QWidget;
+    QGridLayout *gridLayout = new QGridLayout(tabPage);
+
+    QTextEdit *textEdit = new QTextEdit;
+    textEdit->setFontPointSize(12);
+    textEdit->setCursor(Qt::IBeamCursor);
+
+    gridLayout->addWidget(textEdit, 0, 0);
+    tabPage->setProperty("filePath", info.filePath());
+    ui->notesTabs->addTab(tabPage, info.fileName());
+    int tabIndex = ui->notesTabs->indexOf(tabPage);
+    ui->notesTabs->setCurrentIndex(tabIndex);
+
     const QString contents = QString::fromUtf8(file.readAll());
-    ui->notesEdit->setPlainText(contents);
-
-
-    if(fileType == "md")
-        ui->notesEdit->setMarkdown(contents);
+    if (fileType == "txt")
+        textEdit->setPlainText(contents);
+    else
+        textEdit->setMarkdown(contents);
 }
 
+void MainWindow::restoreTabs()
+{
+    QSettings settings(qgetenv("USERNAME"), "Norn");
+    QStringList openFiles = settings.value("openFiles").toStringList();
+    int currentIndex = settings.value("currentTab", 0).toInt();
+
+    qDebug() << "All files: " << openFiles;
+
+    for (const QString &path : openFiles) {
+        qDebug() << "Opening file: " << path;
+        openFile(path);
+    }
+
+    ui->notesTabs->setCurrentIndex(currentIndex);
+}
+
+void MainWindow::onSaveNote()
+{
+    const int idx = ui->notesTabs->currentIndex();
+    if (idx < 0) { qDebug() << "No note tab is active."; return; }
+
+    QWidget *tab = ui->notesTabs->widget(idx);
+    if (!tab) return;
+
+    QTextEdit *editor = tab->findChild<QTextEdit *>();
+    if (!editor) return;
+
+    const QString path = tab->property("filePath").toString();
+    if (path.isEmpty()) {
+        qDebug() << "Active editor has no filePath (e.g. the default tab).";
+        return;
+    }
+
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        qDebug() << "Cannot write note:" << path << "(" << file.errorString() << ")";
+        return;
+    }
+
+    if (QFileInfo(path).completeSuffix() == "md")
+        file.write(editor->toMarkdown().toUtf8());
+    else
+        file.write(editor->toPlainText().toUtf8());
+
+    file.close();
+    qDebug() << "Saved note:" << path;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings(qgetenv("USERNAME"), "Norn");
+
+    QStringList openFiles;
+    for (int i = 0; i < ui->notesTabs->count(); ++i) {
+        openFiles << ui->notesTabs->widget(i)->property("filePath").toString();
+    }
+
+    settings.setValue("openFiles", openFiles);
+    settings.setValue("currentTab", ui->notesTabs->currentIndex());
+
+    qDebug() << "Settings saved: " << settings.value("openFiles") << " " << settings.value("currentTab");
+
+    QMainWindow::closeEvent(event);
+}
