@@ -7,4 +7,7 @@
         <file>tasks.png</file>
         <file>norn.png</file>
     </qresource>
+    <qresource prefix="/text">
+        <file>README.md</file>
+    </qresource>
 </RCC>
